@@ -7,20 +7,48 @@
 
     <p id="result"></p>
 
-    <script>
-        function getLocation() {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVNHlGo7cjjeMri-PMPD33-vR2f6hnp_0",
+            authDomain: "loc-share-6af57.firebaseapp.com",
+            databaseURL: "https://loc-share-6af57-default-rtdb.firebaseio.com",
+            projectId: "loc-share-6af57",
+            storageBucket: "loc-share-6af57.firebasestorage.app",
+            messagingSenderId: "113142286869",
+            appId: "1:113142286869:web:0b1b9cdb3e7b6b4dc4dc1c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.getLocation = function() {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
                     document.getElementById("result").innerHTML =
-                        "Latitude: " + position.coords.latitude +
-                        "<br>Longitude: " + position.coords.longitude;
+                        "Latitude: " + lat +
+                        "<br>Longitude: " + lng;
+
+                    set(ref(db, "location"), {
+                        lat: lat,
+                        lng: lng,
+                        time: Date.now()
+                    });
+
+                    document.getElementById("result").innerHTML +=
+                        "<br><br>✅ Location saved to Firebase!";
                 },
                 function(error) {
                     document.getElementById("result").innerHTML =
-                        "Location permission denied.";
+                        "❌ Location permission denied.";
                 }
             );
-        }
+        };
     </script>
 </body>
 </html>
